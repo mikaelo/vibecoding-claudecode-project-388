@@ -17,7 +17,7 @@ extract_price  ──►  tracker  ──►  alert
 | # | Skill           | Что делает                                                                                              | Источник данных                          | Статус |
 |---|-----------------|---------------------------------------------------------------------------------------------------------|------------------------------------------|:------:|
 | 1 | `extract_price` | Котировка одного тикера `TICKER@MIC` → `open`, `current` (last), `datetime`.                             | Finam MCP `get-quote`                    | ✅ |
-| 2 | `tracker`       | По счёту резолвит позиции, по каждой вызывает `extract_price`, собирает snapshot (JSON+MD) и пишет его в репозиторий `mikaelo/tracker-data` файлом `YYYY-MM-DD-HH-MM.json`. | Finam MCP `get-accounts-list`, `get-account` + skill `extract_price`; GitHub MCP `create_or_update_file` | ✅ |
+| 2 | `tracker`       | По счёту резолвит позиции, по каждой вызывает `extract_price`, собирает snapshot (JSON+MD) и пишет его **напрямую в `main`** репозитория `mikaelo/tracker-data` файлом `YYYY-MM-DD-HH-MM.json` (без веток и PR). | Finam MCP `get-accounts-list`, `get-account` + skill `extract_price`; GitHub MCP `create_or_update_file` | ✅ |
 | 3 | `alert`         | По счёту сравнивает `current` с ценой покупки `averagePrice`, при отклонении ≥ порога (по умолчанию 10%, в любую сторону) шлёт сводку сработавших бумаг в Telegram. | Finam MCP `get-account` (averagePrice) + skill `extract_price` (current); Telegram Bot API `sendMessage` | ✅ |
 
 ## Ключевые решения
