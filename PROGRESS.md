@@ -45,6 +45,12 @@ extract_price ──► tracker ──► telegram-message ──► telegram_al
 - **Порог алерта.** Сравнивается модуль отклонения
   `(current − averagePrice) / averagePrice`; знак задаёт направление
   (`down`/`up`). По умолчанию `threshold=0.10`, `direction=both`.
+- **Только акции и облигации.** `tracker` классифицирует позиции через
+  `get-instrument` (`category`: «Акции» → `stock`, «Долговые инструменты» →
+  `bond`) и оставляет только эти классы; фонды/БПИФ, фьючерсы, валюта исключаются
+  из snapshot и алертов. Класс кладётся в строки snapshot и в данные алерта.
+- **Иконки по классу в Telegram.** `telegram-message` выбирает эмодзи по (класс,
+  направление): stock 🟢/🔴, bond 🔵/🟠 (карта в `KNOWLEDGE.md`).
 - **Разделение ответственности (Telegram).** Дифф и цифры — `tracker`
   (детерминированно). Текст сообщения — агент `telegram-message` на дешёвой модели
   (Haiku), только оформление. Отправка — skill `telegram_alert` (обёртка над
