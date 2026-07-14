@@ -17,7 +17,7 @@ extract_price  ──►  tracker  ──►  alert
 | # | Skill           | Что делает                                                                                              | Источник данных                          | Статус |
 |---|-----------------|---------------------------------------------------------------------------------------------------------|------------------------------------------|:------:|
 | 1 | `extract_price` | Котировка одного тикера `TICKER@MIC` → `open`, `current` (last), `datetime`.                             | Finam MCP `get-quote`                    | ✅ |
-| 2 | `tracker`       | По счёту резолвит позиции, по каждой вызывает `extract_price`, собирает snapshot (JSON+MD) и пишет его **напрямую в `main`** репозитория `mikaelo/tracker-data` файлом `YYYY-MM-DD-HH-MM.json` (без веток и PR). | Finam MCP `get-accounts-list`, `get-account` + skill `extract_price`; GitHub MCP `create_or_update_file` | ✅ |
+| 2 | `tracker`       | По счёту резолвит позиции, по каждой вызывает `extract_price`. **Полный** snapshot (все бумаги) всегда пишется **напрямую в `main`** `mikaelo/tracker-data` (`YYYY-MM-DD-HH-MM.json`, без веток/PR), а в ответе возвращаются **только** бумаги под условиями из `KNOWLEDGE.md` (откл. от цены покупки > 10% И изменение цены открытия vs предыдущий snapshot > 1%). | Finam MCP `get-accounts-list`, `get-account` + skill `extract_price`; GitHub MCP `get_file_contents`/`create_or_update_file` | ✅ |
 | 3 | `alert`         | По счёту сравнивает `current` с ценой покупки `averagePrice`, при отклонении ≥ порога (по умолчанию 10%, в любую сторону) шлёт сводку сработавших бумаг в Telegram. | Finam MCP `get-account` (averagePrice) + skill `extract_price` (current); Telegram Bot API `sendMessage` | ✅ |
 
 ## Ключевые решения
@@ -33,6 +33,12 @@ extract_price  ──►  tracker  ──►  alert
 - **Форма ответа `get-account` (Finam MCP).** Позиции — вложенные объекты:
   `positions[].symbol`, `positions[].averagePrice.value` (строка),
   `positions[].currentPrice.value` (строка). Значения-строки приводятся к числу.
+- **`tracker`: сохраняем всё, возвращаем отфильтрованное.** В `tracker-data`
+  всегда пишется полный snapshot (все бумаги) — это база для сравнения по цене
+  открытия. В ответе skill отдаёт только бумаги, где откл. от цены покупки > 10%
+  И изменение цены открытия относительно предыдущего snapshot > 1%. Пороги
+  (`snapshot_deviation_threshold`, `snapshot_open_change_threshold`) — в
+  `KNOWLEDGE.md`.
 - **Порог алерта.** Сравнивается модуль отклонения
   `(current − averagePrice) / averagePrice`; знак задаёт направление
   (`down`/`up`). По умолчанию `threshold=0.10`, `direction=both`.
