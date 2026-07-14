@@ -3,8 +3,8 @@
 
 ## Пайплайн отслеживания цен портфеля Финам
 
-Компонуемые Claude Code skill'ы (`.claude/skills/`): `extract_price` → `tracker`
-→ `telegram_alert`. Все настройки — в [`KNOWLEDGE.md`](./KNOWLEDGE.md).
+Компонуемые Claude Code skill'ы (`.claude/skills/`): `extract-price` → `tracker`
+→ `telegram-alert`. Все настройки — в [`KNOWLEDGE.md`](./KNOWLEDGE.md).
 
 ### Отправка в Telegram
 
