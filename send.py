@@ -11,7 +11,7 @@
 Примеры:
   python3 send.py "Привет из tracker"
   echo "текст со stdin" | python3 send.py
-  python3 send.py --chat-id 550944806 "в конкретный чат"
+  python3 send.py --chat-id 123456789 "в конкретный чат"
 """
 import argparse
 import json
